@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import spidev
 
 class inverseKinematics():
     def __init__(self,coor_x,coor_y,theta3):
@@ -159,3 +160,10 @@ if __name__=='__main__':
         preZ = z
         
         i = i +1
+    spi = spidev.SpiDev()
+    spi.open(0,0)
+    p = int(6400/360 * c)
+    spi.xfer([p, p, p, p, p])
+    print(arr)
+    print(a,b,z,c)
+    print(preArm, preElbow, preZ)
