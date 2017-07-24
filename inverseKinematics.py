@@ -162,8 +162,11 @@ if __name__=='__main__':
         i = i +1
     spi = spidev.SpiDev()
     spi.open(0,0)
-    p = int(6400/360 * c)
-    spi.xfer([p, p, p, p, p])
+    steps = int(c/1.8)
+    limit_steps = 10
+    i = 0
+    
+		
     print(arr)
     print(a,b,z,c)
     print(preArm, preElbow, preZ)
