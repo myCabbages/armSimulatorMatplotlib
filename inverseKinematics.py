@@ -13,13 +13,13 @@ class inverseKinematics():
         self.a1 = 10
         self.a2 = 10
         self.d3 = 10
-        
+
     def getRotationMatrix(self):
         "Calculate the rotation matrix from "
         theta3 = np.radians(self.theta3)
         self.r =np.array ([[np.cos(theta3), - np.sin(theta3), 0], \
                            [np.sin(theta3), np.cos(theta3), 0], [0, 0, 1]])
-        
+
     def getWristCenter(self):
         "Calculate the coordinate of wristCenter, the point before the end-effector"
         a = np.array([self.coor_x,self.coor_y,0])
@@ -31,7 +31,7 @@ class inverseKinematics():
     def getAngles(self):
         self.getRotationMatrix()
         self.getWristCenter()
-        
+
         "Calculate the cosine of theta2 using law of cosines"
         c2 = (self.ox**2 + self.oy**2 - self.a1**2 - self.a2**2)/(2*self.a1*self.a2)
         theta2_neg = np.arctan2(-np.sqrt(1-c2**2),c2);
@@ -42,7 +42,7 @@ class inverseKinematics():
 
         self.jointAngle_UpArm = theta1
         self.jointAngle_LowArm = theta2_neg
-        
+
         return np.array([self.jointAngle_UpArm,self.jointAngle_LowArm])
 
     def getLengthOfArm(self):
@@ -50,17 +50,17 @@ class inverseKinematics():
 
         upperTril1 = 71.59
         lowerTril1 = 65
-        lowerTirl2 = 289.41
+        lowerTril2 = 289.41
         l1 = upperTril1
-        
+
         "Calculate the upper triangle"
         alpha = self.jointAngle_UpArm + math.pi/2
-        
+
         omega = max(np.arccos((228.97**2+71.59**2-292**2)/(2*228.97*71.59)),math.pi/2)
 
         "Calculate the lower triangle"
-        l2 = np.sqrt(lowerTirl2**2+lowerTril1**2)
-        beta = np.arctan2(lowerTril1,lowerTirl2)
+        l2 = np.sqrt(lowerTril2**2+lowerTril1**2)
+        beta = np.arctan2(lowerTril1,lowerTril2)
 
         psi = 2*math.pi - alpha - beta - omega
         arm_l3 = np.sqrt(l1**2+l2**2-2*l1*l2*np.cos(psi))
@@ -158,15 +158,16 @@ if __name__=='__main__':
         preArm = arm
         preElbow = elbow
         preZ = z
-        
+
         i = i +1
     spi = spidev.SpiDev()
     spi.open(0,0)
     steps = int(c/1.8)
     limit_steps = 10
     i = 0
-    
-		
+
+
+
     print(arr)
     print(a,b,z,c)
     print(preArm, preElbow, preZ)
