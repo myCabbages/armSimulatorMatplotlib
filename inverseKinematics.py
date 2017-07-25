@@ -1,6 +1,8 @@
 import numpy as np
 import math
 import spidev
+import RPi.GPIO as GPIO
+import time
 
 class inverseKinematics():
     def __init__(self,coor_x,coor_y,theta3):
@@ -162,11 +164,24 @@ if __name__=='__main__':
         i = i +1
     spi = spidev.SpiDev()
     spi.open(0,0)
-    steps = int(c/1.8)
-    limit_steps = 10
-    i = 0
+    steps = int(c/360*6400/100)
+    i = 1
     
-		
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(29, GPIO.IN)
+
+    trigger = GPIO.input(29)
+    
+    while i <= steps:
+        if trigger == 0:
+            spi.xfer([1,1,1,1,1])
+            trigger = GPIO.input(29)
+            i = i + 1
+        else:
+            print('wait at', i)
+            trigger = GPIO.input(29)
+	
+    print(steps)	
     print(arr)
     print(a,b,z,c)
     print(preArm, preElbow, preZ)
