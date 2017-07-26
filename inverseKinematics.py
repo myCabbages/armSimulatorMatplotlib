@@ -35,7 +35,7 @@ class inverseKinematics():
         self.getWristCenter()
 
         "Calculate the cosine of theta2 using law of cosines"
-        c2 = (self.ox**2 + self.oy**2 - self.a1**2 - self.a2**2)/(2*self.a1*self.a2)
+        c2 = (-self.ox**2 - self.oy**2 + self.a1**2 + self.a2**2)/(2*self.a1*self.a2)
         theta2_neg = np.arctan2(-np.sqrt(1-c2**2),c2);
 
         "Calculate theta1 using a pair of inverse tangents"
@@ -152,7 +152,7 @@ if __name__=='__main__':
                 arr[j,0] = -1
 
         for k in range(0,int(abs(round(pulse_base/10)))):
-            if pulse_elbow >= 0:
+            if pulse_base >= 0:
                 arr[k,0] = 1
             else:
                 arr[k,0] = -1
@@ -162,17 +162,21 @@ if __name__=='__main__':
         preZ = z
 
         i = i +1
+
+    # Communication with spidev
     spi = spidev.SpiDev()
     spi.open(0,0)
 
     steps = int(c/360*6400/100)
-    i = 1
 
+    # Init GPIO for waiting buffer
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(29, GPIO.IN)
 
     trigger = GPIO.input(29)
 
+    # Automatically wait buffer to clean and then continue
+    i = 1
     while i <= steps:
         if trigger == 0:
             spi.xfer([1,1,1,1,1])
@@ -183,5 +187,4 @@ if __name__=='__main__':
 
     print(steps)
     print(arr)
-    print(a,b,z,c)
-    print(preArm, preElbow, preZ)
+    print pulse_arm, pulse_elbow
