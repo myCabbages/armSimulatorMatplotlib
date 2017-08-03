@@ -113,6 +113,34 @@ if __name__=='__main__':
     elbow_arr = np.array([1])
     base_arr = np.array([1])
     i = 0
+
+    # Communication with spidev
+    spi = spidev.SpiDev()
+    spi.open(0,0)
+
+    # Init GPIO for waiting buffer
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(29, GPIO.IN)
+    GPIO.setup(31, GPIO.IN)
+
+    trigger = GPIO.input(29)
+    trig_sensor = GPIO.input(31)
+
+    # Find origin
+    while 1:
+        if trig_sensor == 1:
+            if trigger == 0:
+                spi.xfer([1,1,1,1,1])
+                trigger = GPIO.input(29)
+                trig_sensor = GPIO.input(31)
+                i = i + 1
+            else:
+                trigger = GPIO.input(29)
+                trig_sensor = GPIO.input(31)
+        elif trig_sensor == 0:
+            break
+
+
     while i <100:
         print("please input the coor_x:")
         a = float(input())
@@ -163,20 +191,12 @@ if __name__=='__main__':
 
         i = i +1
 
-    # Communication with spidev
-    spi = spidev.SpiDev()
-    spi.open(0,0)
-
-    steps = int(c/360*6400/100)
-
-    # Init GPIO for waiting buffer
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(29, GPIO.IN)
-
-    trigger = GPIO.input(29)
-
     # Automatically wait buffer to clean and then continue
     i = 1
+    arm_steps = pulse_arm / 100
+    elbow_steps = pulse_elbow / 100
+    base_steps = pulse_base / 100
+    tmp = [arm_steps, elbow_steps]
     while i <= steps:
         if trigger == 0:
             spi.xfer([1,1,1,1,1])
@@ -187,4 +207,4 @@ if __name__=='__main__':
 
     print(steps)
     print(arr)
-    print pulse_arm, pulse_elbow
+    print pulse_arm, pulse_elbow, pulse_base
