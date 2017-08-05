@@ -132,14 +132,15 @@ if __name__=='__main__':
     # Find origin
     while sum(sensor_list) != 0:
         if trigger == 0:
-            if sensor_base == 0:
-                if sensor_arm == 0:
-                    if sensor_elbow == 0:
-                        spi.xfer([10,10,10,0,0])
-                    else:
-                        
+            tmp = np.multiply(sensor_list,[10,10,10,0,0])
+            spi.xfer(tmp)
+            trigger = GPIO.input(29)
+            sensor_base = GPIO.input(31)
+            sensor_arm = GPIO.input(33)
+            sensor_elbow = GPIO.input(35)
+            sensor_list = [sensor_base, sensor_arm, sensor_elbow]
         elif trigger == 1:
-            trigger - GPIO.input(29)
+            trigger = GPIO.input(29)
 
 
     print("please input the coor_x:")
