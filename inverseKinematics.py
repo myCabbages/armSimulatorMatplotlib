@@ -141,6 +141,30 @@ if __name__=='__main__':
             break
 
 
+    print("please input the coor_x:")
+    a = float(input())
+    print("please input the coor_y:")
+    b = float(input())
+    print("please input the coor_z:")
+    z = float(input())
+    print("please input the theta3:")
+    c = float(input())
+    inv = inverseKinematics(a,b,c)
+
+    "get the length of arm and elbow"
+    arm = inv.getLengthOfArm()
+    elbow = inv.getLengthOfElbow()
+    base = z
+
+    dist_arm = arm - preArm
+    dist_elbow = elbow - preElbow
+    dist_z = z - preZ
+
+    pulse_arm = inv.getPulse(dist_arm)
+    pulse_elbow = inv.getPulse(dist_elbow)
+    pulse_base = inv.getPulse(dist_z)
+
+    '''
     while i <100:
         print("please input the coor_x:")
         a = float(input())
@@ -190,14 +214,18 @@ if __name__=='__main__':
         preZ = z
 
         i = i +1
+        '''
 
     # Automatically wait buffer to clean and then continue
     i = 1
     arm_steps = pulse_arm / 100
     elbow_steps = pulse_elbow / 100
     base_steps = pulse_base / 100
-    tmp = [arm_steps, elbow_steps]
-    while i <= steps:
+    tmp = [arm_steps, elbow_steps, base_steps]
+    sort(tmp)
+
+    trigger = GPIO.input(29)
+    while i <= base_steps:
         if trigger == 0:
             spi.xfer([1,1,1,1,1])
             trigger = GPIO.input(29)
