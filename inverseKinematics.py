@@ -124,21 +124,22 @@ if __name__=='__main__':
     GPIO.setup(31, GPIO.IN)
 
     trigger = GPIO.input(29)
-    trig_sensor = GPIO.input(31)
+    sensor_base = GPIO.input(31)
+    sensor_arm = GPIO.input(33)
+    sensor_elbow = GPIO.input(35)
+    sensor_list = [sensor_base, sensor_arm, sensor_elbow]
 
     # Find origin
-    while 1:
-        if trig_sensor == 1:
-            if trigger == 0:
-                spi.xfer([1,1,1,1,1])
-                trigger = GPIO.input(29)
-                trig_sensor = GPIO.input(31)
-                i = i + 1
-            else:
-                trigger = GPIO.input(29)
-                trig_sensor = GPIO.input(31)
-        elif trig_sensor == 0:
-            break
+    while sum(sensor_list) != 0:
+        if trigger == 0:
+            if sensor_base == 0:
+                if sensor_arm == 0:
+                    if sensor_elbow == 0:
+                        spi.xfer([10,10,10,0,0])
+                    else:
+                        
+        elif trigger == 1:
+            trigger - GPIO.input(29)
 
 
     print("please input the coor_x:")
