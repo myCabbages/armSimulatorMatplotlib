@@ -129,19 +129,21 @@ if __name__=='__main__':
     sensor_base = GPIO.input(31)
     sensor_arm = GPIO.input(33)
     sensor_elbow = GPIO.input(35)
-    sensor_list = [sensor_base, sensor_arm, sensor_elbow, 0, 0]
+    sensor_list = [0, 0, sensor_base, sensor_arm, sensor_elbow]
 
     # Find origin
     while sum(sensor_list) != 0:
         if trigger == 0:
-            tmp = np.multiply(sensor_list,[10,10,10,0,0])
+            print(sensor_list)
+            tmp = np.multiply(sensor_list,[0,0,100,-100,-100])
             tmp = tmp.tolist()
+            print(tmp)
             spi.xfer(tmp)
             trigger = GPIO.input(29)
             sensor_base = GPIO.input(31)
             sensor_arm = GPIO.input(33)
             sensor_elbow = GPIO.input(35)
-            sensor_list = [sensor_base, sensor_arm, sensor_elbow, 0, 0]
+            sensor_list = [0, 0, sensor_base, sensor_arm, sensor_elbow]
         elif trigger == 1:
             trigger = GPIO.input(29)
 
