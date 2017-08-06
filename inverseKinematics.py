@@ -122,6 +122,8 @@ if __name__=='__main__':
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(29, GPIO.IN)
     GPIO.setup(31, GPIO.IN)
+    GPIO.setup(33, GPIO.IN)
+    GPIO.setup(35, GPIO.IN)
 
     trigger = GPIO.input(29)
     sensor_base = GPIO.input(31)
