@@ -227,8 +227,11 @@ if __name__=='__main__':
     arm_steps = pulse_arm / 100
     elbow_steps = pulse_elbow / 100
     base_steps = pulse_base / 100
-    tmp = [arm_steps, elbow_steps, base_steps]
-    sort(tmp)
+    tmp = [arm_steps, elbow_steps,base_steps]
+    tmp.sort()
+    idx_arm = tmp.index(arm_steps)
+    idx_elbow = tmp.index(elbow_steps)
+    idx_base = tmp.index(base_steps)
 
     trigger = GPIO.input(29)
     while i <= base_steps:
@@ -238,7 +241,7 @@ if __name__=='__main__':
             i = i + 1
         else:
             trigger = GPIO.input(29)
-	
+
 
     print(arr)
     print pulse_arm, pulse_elbow, pulse_base
