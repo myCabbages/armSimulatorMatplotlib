@@ -129,12 +129,13 @@ if __name__=='__main__':
     sensor_base = GPIO.input(31)
     sensor_arm = GPIO.input(33)
     sensor_elbow = GPIO.input(35)
-    sensor_list = [ sensor_base, sensor_arm, sensor_elbow,0,0]
+    sensor_list = [ sensor_base, sensor_arm, sensor_elbow,1,0]
+    '''
     # Find origin
-    while    sum(sensor_list) != 0:
+    while sum(sensor_list) != 0:
         if trigger == 0:
             # print(trigger)
-            tmp = np.multiply(sensor_list,[50,-50,-50,0,0])
+            tmp = np.multiply(sensor_list,[50,-50,-50,50,0])
             tmp = tmp.tolist()
             print(tmp)
             spi.xfer(tmp)
@@ -143,10 +144,10 @@ if __name__=='__main__':
             sensor_base = GPIO.input(31)
             sensor_arm = GPIO.input(33)
             sensor_elbow = GPIO.input(35)
-            sensor_list = [sensor_base, sensor_arm, sensor_elbow,0,0]
+            sensor_list = [sensor_base, sensor_arm, sensor_elbow,1,0]
         elif trigger == 1:
             trigger = GPIO.input(29)
-
+	'''
     print("please input the coor_x:")
     a = float(input())
     print("please input the coor_y:")
@@ -224,24 +225,240 @@ if __name__=='__main__':
 
     # Automatically wait buffer to clean and then continue
     i = 1
+    direct = [1,1,1,0,0]
     arm_steps = pulse_arm / 100
     elbow_steps = pulse_elbow / 100
     base_steps = pulse_base / 100
+    
+    if arm_steps < 0:
+		direct[2] = -1
+		arm_steps = np.abs(arm_steps)
+	
+    if elbow_steps < 0:
+		direct[1] = -1
+		elbow_steps = np.abs(elbow_steps)
+		
+    if base_steps < 0:
+		direct[0] = -1
+		base_steps = np.abs(base_steps)
+    print direct
+	
     tmp = [arm_steps, elbow_steps,base_steps]
     tmp.sort()
     idx_arm = tmp.index(arm_steps)
     idx_elbow = tmp.index(elbow_steps)
     idx_base = tmp.index(base_steps)
+    print pulse_arm, pulse_elbow, pulse_base
+    print tmp
 
     trigger = GPIO.input(29)
-    while i <= base_steps:
-        if trigger == 0:
-            spi.xfer([1,1,1,1,1])
-            trigger = GPIO.input(29)
-            i = i + 1
-        else:
-            trigger = GPIO.input(29)
+    if idx_arm == 0 and idx_elbow == 1 and idx_base == 2:
+		while i <= tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,10,10,0,0])
+				tmp2 = tmp2.tolist()
+				print(tmp2)
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+		
+		i = 1		
+		while i <= tmp[1]-tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,10,0,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+				
+		i = 1
+		while i <= tmp[2]-tmp[1]-tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,0,0,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)	
+		
+		
+		
+		 
+    if idx_arm == 0 and idx_elbow == 2 and idx_base == 1:
+		while i <= tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,10,10,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+		
+		i = 1		
+		while i <= tmp[1]-tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,10,0,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+		
+		i = 1
+		while i <= tmp[2]-tmp[1]-tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[0,10,0,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)  
+    
+    
+    	 
+    if idx_arm == 1 and idx_elbow == 0 and idx_base == 2:
+		while i <= tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,10,10,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+		
+		i = 1		
+		while i <= tmp[1]-tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,0,10,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+		
+		i = 1
+		while i <= tmp[2]-tmp[1]-tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,0,0,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)  
+    
+    
+    	 
+    if idx_arm == 1 and idx_elbow == 2 and idx_base == 0:
+		while i <= tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,10,10,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+		
+		i = 1		
+		while i <= tmp[1]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[0,10,10,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+				
+		i = 1
+		while i <= tmp[2]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[0,10,0,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)          
+    
+    
+    	 
+    if idx_arm == 2 and idx_elbow == 1 and idx_base == 0:
+		while i <= tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,10,10,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+		
+		i = 1		
+		while i <= tmp[1]-tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[0,10,10,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+				
+		i = 1
+		while i <= tmp[2]-tmp[1]-tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[0,0,10,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)  
+            
+            
+    if idx_arm == 2 and idx_elbow == 0 and idx_base == 1:
+		while i <= tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,10,10,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+		
+		i = 1		
+		while i <= tmp[1]-tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[10,0,10,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)
+				
+		i = 1
+		while i <= tmp[2]-tmp[1]-tmp[0]:
+			if trigger == 0:
+				tmp2 = np.multiply(direct,[0,10,10,0,0])
+				tmp2 = tmp2.tolist()
+				spi.xfer(tmp2)
+				trigger = GPIO.input(29)
+				i = i + 1
+			else:
+				trigger = GPIO.input(29)          
+                    
 
-
-    print(arr)
-    print pulse_arm, pulse_elbow, pulse_base
