@@ -134,7 +134,7 @@ if __name__=='__main__':
     while    sum(sensor_list) != 0:
         if trigger == 0:
             # print(trigger)
-            tmp = np.multiply(sensor_list,[50,-50,-50,0,0])    
+            tmp = np.multiply(sensor_list,[50,-50,-50,0,0])
             tmp = tmp.tolist()
             print(tmp)
             spi.xfer(tmp)
@@ -146,11 +146,11 @@ if __name__=='__main__':
             sensor_list = [sensor_base, sensor_arm, sensor_elbow,0,0]
         elif trigger == 1:
             trigger = GPIO.input(29)
-			
+
     print("please input the coor_x:")
     a = float(input())
     print("please input the coor_y:")
-    b = float(input()) 
+    b = float(input())
     print("please input the coor_z:")
     z = float(input())
     print("please input the theta3:")
@@ -229,7 +229,7 @@ if __name__=='__main__':
     base_steps = pulse_base / 100
     tmp = [arm_steps, elbow_steps, base_steps]
     sort(tmp)
-    '''
+
     trigger = GPIO.input(29)
     while i <= base_steps:
         if trigger == 0:
@@ -238,8 +238,7 @@ if __name__=='__main__':
             i = i + 1
         else:
             trigger = GPIO.input(29)
-	'''
+	
 
-    print(steps)
     print(arr)
     print pulse_arm, pulse_elbow, pulse_base
