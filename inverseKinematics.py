@@ -254,9 +254,13 @@ if __name__=='__main__':
     print tmp
     '''
 
+    
+    f = open('log.txt', 'w')
     bs = input('Please Enter Displacement of Base: ')
     elb = input('Please Enter Displacement of Elbow: ')
     ar = input('Please Enter Displacement of Arm: ')
+
+    f.write('B' + str(bs) + 'E' + str(elb) + 'A' + str(ar) + '\n')
 
     arm_steps = ar/4*6400/100
     elbow_steps = elb/4*6400/100
