@@ -105,6 +105,103 @@ class inverseKinematics():
         pulse = rounds*6400
         return pulse
 
+class KeyControl:
+    def __init__(self):
+        # this dict keeps track of keys that have been pressed but not
+        # released
+        self.pressed = {}
+
+        self._create_ui()
+
+    def start(self):
+        self._animate()
+        self.root.mainloop()
+
+    def _create_ui(self):
+        self.root = Tk()
+        self.m1 = Motion()
+        self.m2 = Motion()
+        self.m3 = Motion()
+        self._set_bindings()
+
+    def _animate(self):
+        if self.pressed["d"]: self.m1.move_left()
+        if self.pressed["k"]: self.m1.move_right()
+        if self.pressed["w"]: self.m2.move_up2()
+        if self.pressed["s"]: self.m2.move_down2()
+        if self.pressed["o"]: self.m3.move_up3()
+        if self.pressed["l"]: self.m3.move_down3()
+        self.root.after(10, self._animate)
+
+    def _set_bindings(self):
+        for char in ["d","k","w","s","o", "l"]:
+            self.root.bind("<KeyPress-%s>" % char, self._pressed)
+            self.root.bind("<KeyRelease-%s>" % char, self._released)
+            self.pressed[char] = False
+
+    def _pressed(self, event):
+        self.pressed[event.char] = True
+
+    def _released(self, event):
+        self.pressed[event.char] = False
+
+class Motion:
+    def __init__(self):
+        # Communication with spidev
+        spi = spidev.SpiDev()
+        spi.open(0,0)
+
+        # Init GPIO for waiting buffer
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(29, GPIO.IN)
+        GPIO.setup(31, GPIO.IN)
+        GPIO.setup(33, GPIO.IN)
+        GPIO.setup(35, GPIO.IN)
+
+        trigger = GPIO.input(29)
+
+    def move_left(self):
+        if trigger == 0:
+            spi.xfer([10,0,0,0,0])
+            trigger = GPIO.input(29)
+        else:
+            trigger = GPIO.input(29)
+
+    def move_right(self):
+        if trigger == 0:
+            spi.xfer([-10,0,0,0,0])
+            trigger = GPIO.input(29)
+        else:
+            trigger = GPIO.input(29)
+
+    def move_up2(self):
+        if trigger == 0:
+            spi.xfer([0,10,0,0,0])
+            trigger = GPIO.input(29)
+        else:
+            trigger = GPIO.input(29)
+
+    def move_down2(self):
+        if trigger == 0:
+            spi.xfer([0,-10,0,0,0])
+            trigger = GPIO.input(29)
+        else:
+            trigger = GPIO.input(29)
+
+    def move_up3(self):
+        if trigger == 0:
+            spi.xfer([0,0,10,0,0])
+            trigger = GPIO.input(29)
+        else:
+            trigger = GPIO.input(29)
+
+    def move_down3(self):
+        if trigger == 0:
+            spi.xfer([0,0,-10,0,0])
+            trigger = GPIO.input(29)
+        else:
+            trigger = GPIO.input(29)
+
 if __name__=='__main__':
 
     preArm = 319.41
@@ -148,7 +245,10 @@ if __name__=='__main__':
             sensor_list = [sensor_base, sensor_arm, sensor_elbow,1,0]
         elif trigger == 1:
             trigger = GPIO.input(29)
-	
+
+
+    #k = KeyControl()
+    #k.start()
 
     '''
     print("please input the coor_x:")
@@ -255,59 +355,132 @@ if __name__=='__main__':
     print tmp
     '''
 
-    trigger = GPIO.input(29)
-    while True:
-        key = ord(getch())
-        if key == 27:
-            break
-        elif key == 122:
-            if trigger == 0:
-				spi.xfer([10,0,0,0,0])
-				trigger = GPIO.input(29)
-			else:
-				trigger = GPIO.input(29)
-        elif key == 120:
-            if trigger == 0:
-				spi.xfer([-10,0,0,0,0])
-				trigger = GPIO.input(29)
-			else:
-				trigger = GPIO.input(29)
-        elif key == 99:
-            if trigger == 0:
-				spi.xfer([0,10,0,0,0])
-				trigger = GPIO.input(29)
-			else:
-				trigger = GPIO.input(29)
-        elif key == 118:
-            if trigger == 0:
-				spi.xfer([0,-10,0,0,0])
-				trigger = GPIO.input(29)
-			else:
-				trigger = GPIO.input(29)
-        elif key == 98:
-            if trigger == 0:
-				spi.xfer([0,0,10,0,0])
-				trigger = GPIO.input(29)
-			else:
-				trigger = GPIO.input(29)
-        elif key == 110:
-            if trigger == 0:
-				spi.xfer([0,0,-10,0,0])
-				trigger = GPIO.input(29)
-			else:
-				trigger = GPIO.input(29)
-        elif key == 97:
-            if trigger == 0:
-				spi.xfer([0,0,0,10,0])
-				trigger = GPIO.input(29)
-			else:
-				trigger = GPIO.input(29)
-        elif key == 115:
-            if trigger == 0:
-				spi.xfer([0,0,0,-10,0])
-				trigger = GPIO.input(29)
-			else:
-				trigger = GPIO.input(29)
+    filename = input('Please Enter a filename: ')
+    if filename == 'log.txt':
+        f = open(filename, 'w')
+
+        trigger = GPIO.input(29)
+        while True:
+            key = ord(getch())
+            if key == 27:
+                f.write('27\n')
+                break
+            elif key == 100:
+                if trigger == 0:
+                    spi.xfer([10,0,0,0,0])
+                    f.write('100\n')
+                    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 107:
+                if trigger == 0:
+				    spi.xfer([-10,0,0,0,0])
+                    f.write('107\n')
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 119:
+                if trigger == 0:
+				    spi.xfer([0,10,0,0,0])
+                    f.write('119\n')
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 115:
+                if trigger == 0:
+				    spi.xfer([0,-10,0,0,0])
+                    f.write('115\n')
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 111:
+                if trigger == 0:
+				    spi.xfer([0,0,10,0,0])
+                    f.write('111\n')
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 108:
+                if trigger == 0:
+				    spi.xfer([0,0,-10,0,0])
+                    f.write('108\n')
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 114:
+                if trigger == 0:
+				    spi.xfer([0,0,0,10,0])
+                    f.write('114\n')
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 102:
+                if trigger == 0:
+			    	spi.xfer([0,0,0,-10,0])
+                    f.write('102\n')
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+
+        f.close()
+
+    else:
+        f = open('log.txt', 'r')
+
+        trigger = GPIO.input(29)
+        for line in f.readlines():
+            key = line.split()[0]
+            key = int(key)
+            if key == 27:
+                break
+            elif key == 100:
+                if trigger == 0:
+                    spi.xfer([10,0,0,0,0])
+                    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 107:
+                if trigger == 0:
+				    spi.xfer([-10,0,0,0,0])
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 119:
+                if trigger == 0:
+				    spi.xfer([0,10,0,0,0])
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 115:
+                if trigger == 0:
+				    spi.xfer([0,-10,0,0,0])
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 111:
+                if trigger == 0:
+				    spi.xfer([0,0,10,0,0])
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 108:
+                if trigger == 0:
+				    spi.xfer([0,0,-10,0,0])
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 114:
+                if trigger == 0:
+				    spi.xfer([0,0,0,10,0])
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
+            elif key == 102:
+                if trigger == 0:
+			    	spi.xfer([0,0,0,-10,0])
+				    trigger = GPIO.input(29)
+			    else:
+				    trigger = GPIO.input(29)
 
 
     '''
