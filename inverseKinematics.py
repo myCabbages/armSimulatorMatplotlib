@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from msvcrt import getch
 import spidev
 import RPi.GPIO as GPIO
 import time
@@ -130,7 +131,7 @@ if __name__=='__main__':
     sensor_arm = GPIO.input(33)
     sensor_elbow = GPIO.input(35)
     sensor_list = [sensor_base, sensor_arm, sensor_elbow,1,0]
-    '''
+
     # Find origin
     while sum(sensor_list) != 0:
         if trigger == 0:
@@ -147,7 +148,7 @@ if __name__=='__main__':
             sensor_list = [sensor_base, sensor_arm, sensor_elbow,1,0]
         elif trigger == 1:
             trigger = GPIO.input(29)
-	'''
+	
 
     '''
     print("please input the coor_x:")
@@ -254,19 +255,84 @@ if __name__=='__main__':
     print tmp
     '''
 
-    
-    f = open('log.txt', 'w')
-    bs = input('Please Enter Displacement of Base: ')
-    elb = input('Please Enter Displacement of Elbow: ')
-    ar = input('Please Enter Displacement of Arm: ')
+    trigger = GPIO.input(29)
+    while True:
+        key = ord(getch())
+        if key == 27:
+            break
+        elif key == 122:
+            if trigger == 0:
+				spi.xfer([10,0,0,0,0])
+				trigger = GPIO.input(29)
+			else:
+				trigger = GPIO.input(29)
+        elif key == 120:
+            if trigger == 0:
+				spi.xfer([-10,0,0,0,0])
+				trigger = GPIO.input(29)
+			else:
+				trigger = GPIO.input(29)
+        elif key == 99:
+            if trigger == 0:
+				spi.xfer([0,10,0,0,0])
+				trigger = GPIO.input(29)
+			else:
+				trigger = GPIO.input(29)
+        elif key == 118:
+            if trigger == 0:
+				spi.xfer([0,-10,0,0,0])
+				trigger = GPIO.input(29)
+			else:
+				trigger = GPIO.input(29)
+        elif key == 98:
+            if trigger == 0:
+				spi.xfer([0,0,10,0,0])
+				trigger = GPIO.input(29)
+			else:
+				trigger = GPIO.input(29)
+        elif key == 110:
+            if trigger == 0:
+				spi.xfer([0,0,-10,0,0])
+				trigger = GPIO.input(29)
+			else:
+				trigger = GPIO.input(29)
+        elif key == 97:
+            if trigger == 0:
+				spi.xfer([0,0,0,10,0])
+				trigger = GPIO.input(29)
+			else:
+				trigger = GPIO.input(29)
+        elif key == 115:
+            if trigger == 0:
+				spi.xfer([0,0,0,-10,0])
+				trigger = GPIO.input(29)
+			else:
+				trigger = GPIO.input(29)
 
-    f.write('B' + str(bs) + 'E' + str(elb) + 'A' + str(ar) + '\n')
+
+    '''
+    try:
+         f_r = open('log.txt', 'r')
+    except:
+        f = open(filename,'w')
+        #for last in f_r:pass
+
+        f.write('B' + str(bs) + 'E' + str(elb) + 'A' + str(ar) + '\n')
+        f.close()
+    else:
+        f = open('log.txt','a')
+        f.write('B' + str(bs) + 'E' + str(elb) + 'A' + str(ar) + '\n')
+
+        f.close()
+        f_r.close()
+
+
 
     arm_steps = ar/4*6400/100
     elbow_steps = elb/4*6400/100
     base_steps = bs/4*6400/100
 
-    tmp = [arm_steps, elbow_steps,base_steps]
+    tmp = [arm_steps, elbow_steps, base_steps]
     tmp.sort()
     idx_arm = tmp.index(arm_steps)
     idx_elbow = tmp.index(elbow_steps)
@@ -485,3 +551,4 @@ if __name__=='__main__':
 				i = i + 1
 			else:
 				trigger = GPIO.input(29)
+        '''
